@@ -46,15 +46,16 @@ func DeployCommand() cli.Command {
 type deploycmd struct {
 	clientV2 *v2Client.Fn
 
-	appName   string
-	createApp bool
-	wd        string
-	verbose   bool
-	local     bool
-	noCache   bool
-	registry  string
-	all       bool
-	noBump    bool
+	appName        string
+	createApp      bool
+	wd             string
+	verbose        bool
+	local          bool
+	noCache        bool
+	registry       string
+	all            bool
+	noBump         bool
+	keepDockerfile bool
 }
 
 func (p *deploycmd) flags() []cli.Flag {
@@ -106,6 +107,11 @@ func (p *deploycmd) flags() []cli.Flag {
 		cli.StringFlag{
 			Name:  "working-dir,w",
 			Usage: "Specify the working directory to deploy a function, must be the full path.",
+		},
+		cli.BoolFlag{
+			Name:        "keep-dockerfile, kd",
+			Usage:       "Keep dockerfile after building.",
+			Destination: &p.keepDockerfile,
 		},
 	}
 }
@@ -292,7 +298,7 @@ func (p *deploycmd) deployFuncV20180708(c *cli.Context, app *models.App, funcfil
 	}
 
 	buildArgs := c.StringSlice("build-arg")
-	_, err = common.BuildFuncV20180708(c.GlobalBool("verbose"), funcfilePath, funcfile, buildArgs, p.noCache)
+	_, err = common.BuildFuncV20180708(c.GlobalBool("verbose"), funcfilePath, funcfile, buildArgs, p.noCache, p.keepDockerfile)
 	if err != nil {
 		return err
 	}

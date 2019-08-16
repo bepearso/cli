@@ -86,7 +86,7 @@ func BuildFunc(verbose bool, fpath string, funcfile *FuncFile, buildArg []string
 		return nil, err
 	}
 
-	if err := dockerBuild(verbose, fpath, funcfile, buildArg, noCache); err != nil {
+	if err := dockerBuild(verbose, fpath, funcfile, buildArg, noCache, keepDockerfile); err != nil {
 		return nil, err
 	}
 
@@ -108,7 +108,7 @@ func BuildFuncV20180708(verbose bool, fpath string, funcfile *FuncFileV20180708,
 		return nil, err
 	}
 
-	if err := dockerBuildV20180708(verbose, fpath, funcfile, buildArg, noCache); err != nil {
+	if err := dockerBuildV20180708(verbose, fpath, funcfile, buildArg, noCache, keepDockerfile); err != nil {
 		return nil, err
 	}
 
@@ -142,7 +142,7 @@ func PrintContextualInfo() {
 	fmt.Println("Current Context: ", currentContext)
 }
 
-func dockerBuild(verbose bool, fpath string, ff *FuncFile, buildArgs []string, noCache bool) error {
+func dockerBuild(verbose bool, fpath string, ff *FuncFile, buildArgs []string, noCache bool, keepDockerfile bool) error {
 	err := dockerVersionCheck()
 	if err != nil {
 		return err
@@ -164,7 +164,9 @@ func dockerBuild(verbose bool, fpath string, ff *FuncFile, buildArgs []string, n
 		if err != nil {
 			return err
 		}
-		defer os.Remove(dockerfile)
+		if !keepDockerfile {
+			defer os.Remove(dockerfile)
+		}
 		if helper.HasPreBuild() {
 			err := helper.PreBuild()
 			if err != nil {
@@ -186,7 +188,7 @@ func dockerBuild(verbose bool, fpath string, ff *FuncFile, buildArgs []string, n
 	return nil
 }
 
-func dockerBuildV20180708(verbose bool, fpath string, ff *FuncFileV20180708, buildArgs []string, noCache bool) error {
+func dockerBuildV20180708(verbose bool, fpath string, ff *FuncFileV20180708, buildArgs []string, noCache bool, keepDockerfile bool) error {
 	err := dockerVersionCheck()
 	if err != nil {
 		return err
@@ -208,7 +210,9 @@ func dockerBuildV20180708(verbose bool, fpath string, ff *FuncFileV20180708, bui
 		if err != nil {
 			return err
 		}
-		defer os.Remove(dockerfile)
+		if !keepDockerfile {
+			defer os.Remove(dockerfile)
+		}
 		if helper.HasPreBuild() {
 			err := helper.PreBuild()
 			if err != nil {
