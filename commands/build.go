@@ -26,8 +26,9 @@ func BuildCommand() cli.Command {
 }
 
 type buildcmd struct {
-	verbose bool
-	noCache bool
+	verbose        bool
+	noCache        bool
+	keepDockerfile bool
 }
 
 func (b *buildcmd) flags() []cli.Flag {
@@ -49,6 +50,11 @@ func (b *buildcmd) flags() []cli.Flag {
 		cli.StringFlag{
 			Name:  "working-dir, w",
 			Usage: "Specify the working directory to build a function, must be the full path.",
+		},
+		cli.BoolFlag{
+			Name:        "keep-dockerfile, kd",
+			Usage:       "Keep dockerfile after building.",
+			Destination: &b.keepDockerfile,
 		},
 	}
 }
@@ -82,7 +88,7 @@ func (b *buildcmd) build(c *cli.Context) error {
 		}
 
 		buildArgs := c.StringSlice("build-arg")
-		ff, err = common.BuildFuncV20180708(c.GlobalBool("verbose"), fpath, ff, buildArgs, b.noCache)
+		ff, err = common.BuildFuncV20180708(c.GlobalBool("verbose"), fpath, ff, buildArgs, b.noCache, b.keepDockerfile)
 		if err != nil {
 			return err
 		}
@@ -97,7 +103,7 @@ func (b *buildcmd) build(c *cli.Context) error {
 		}
 
 		buildArgs := c.StringSlice("build-arg")
-		ff, err = common.BuildFunc(c.GlobalBool("verbose"), fpath, ff, buildArgs, b.noCache)
+		ff, err = common.BuildFunc(c.GlobalBool("verbose"), fpath, ff, buildArgs, b.noCache, b.keepDockerfile)
 		if err != nil {
 			return err
 		}
