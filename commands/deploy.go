@@ -109,7 +109,7 @@ func (p *deploycmd) flags() []cli.Flag {
 			Usage: "Specify the working directory to deploy a function, must be the full path.",
 		},
 		cli.BoolFlag{
-			Name:        "keep-dockerfile, kd",
+			Name:        "keep-dockerfile",
 			Usage:       "Keep dockerfile after building.",
 			Destination: &p.keepDockerfile,
 		},

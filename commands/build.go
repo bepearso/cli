@@ -52,7 +52,7 @@ func (b *buildcmd) flags() []cli.Flag {
 			Usage: "Specify the working directory to build a function, must be the full path.",
 		},
 		cli.BoolFlag{
-			Name:        "keep-dockerfile, kd",
+			Name:        "keep-dockerfile",
 			Usage:       "Keep dockerfile after building.",
 			Destination: &b.keepDockerfile,
 		},
