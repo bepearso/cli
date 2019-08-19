@@ -174,6 +174,9 @@ func dockerBuild(verbose bool, fpath string, ff *FuncFile, buildArgs []string, n
 			}
 		}
 	}
+	if !keepDockerfile {
+		defer os.Remove(dockerfile)
+	}
 	err = RunBuild(verbose, dir, ff.ImageName(), dockerfile, buildArgs, noCache)
 	if err != nil {
 		return err
@@ -219,6 +222,9 @@ func dockerBuildV20180708(verbose bool, fpath string, ff *FuncFileV20180708, bui
 				return err
 			}
 		}
+	}
+	if !keepDockerfile {
+		defer os.Remove(dockerfile)
 	}
 	err = RunBuild(verbose, dir, ff.ImageNameV20180708(), dockerfile, buildArgs, noCache)
 	if err != nil {
@@ -353,6 +359,11 @@ func writeTmpDockerfile(helper langs.LangHelper, dir string, ff *FuncFile) (stri
 	if err != nil {
 		return "", err
 	}
+
+	renameErr := os.Rename(fd.Name(), "Dockerfile")
+	if renameErr != nil {
+		return "", renameErr
+	}
 	defer fd.Close()
 
 	// multi-stage build: https://medium.com/travis-on-docker/multi-stage-docker-builds-for-creating-tiny-go-images-e0e1867efe5a
@@ -406,6 +417,11 @@ func writeTmpDockerfileV20180708(helper langs.LangHelper, dir string, ff *FuncFi
 	fd, err := ioutil.TempFile(dir, "Dockerfile")
 	if err != nil {
 		return "", err
+	}
+
+	renameErr := os.Rename(fd.Name(), "Dockerfile")
+	if renameErr != nil {
+		return "", renameErr
 	}
 	defer fd.Close()
 
